@@ -20,7 +20,7 @@ import org.gradle.internal.extensions.stdlib.toDefaultLowerCase
  *
  * Using Gradle -P properties:
  * ```
- * ./gradlew build -PshadePE=true -Prelocate=false -Prelease=true
+ *   -Prelocate=false -Prelease=true
  * ```
  *
  * Using environment variables:

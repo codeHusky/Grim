@@ -24,7 +24,6 @@ repositories {
     maven("https://nexus.scarsz.me/content/repositories/releases") // Configuralize
     maven("https://repo.opencollab.dev/maven-snapshots/") // Floodgate
     maven("https://repo.opencollab.dev/maven-releases/") // Cumulus (for Floodgate)
-    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     mavenCentral() // FastUtil
 }
 

@@ -1,5 +1,5 @@
 repositories {
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
+
 }
 
 dependencies {
@@ -7,7 +7,7 @@ dependencies {
     mappings("net.fabricmc:yarn:1.16.1+build.21:v2")
 
     modImplementation(fabricApi.module("fabric-lifecycle-events-v1", "0.42.0+1.16"))
-    modImplementation("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
+    modImplementation("me.lucko:fabric-permissions-api:0.3.1")
 }
 
 loom {

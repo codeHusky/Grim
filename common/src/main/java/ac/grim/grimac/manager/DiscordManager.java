@@ -8,7 +8,6 @@ import ac.grim.grimac.utils.anticheat.LogUtil;
 import ac.grim.grimac.utils.anticheat.MessageUtil;
 import ac.grim.grimac.utils.webhook.Embed;
 import ac.grim.grimac.utils.webhook.EmbedField;
-import ac.grim.grimac.utils.webhook.EmbedFooter;
 import ac.grim.grimac.utils.webhook.WebhookMessage;
 
 import java.awt.*;
@@ -61,7 +60,7 @@ public class DiscordManager implements StartableInitable, ReloadableInitable {
                 url = new URI(webhook);
             }
 
-            embedTitle = GrimAPI.INSTANCE.getConfigManager().getConfig().getStringElse("embed-title", "**Grim Alert**");
+            embedTitle = GrimAPI.INSTANCE.getConfigManager().getConfig().getStringElse("embed-title", "**Reaper Alert**");
 
             try {
                 embedColor = Color.decode(GrimAPI.INSTANCE.getConfigManager().getConfig().getStringElse("embed-color", "#00FFFF")).getRGB();
@@ -107,7 +106,7 @@ public class DiscordManager implements StartableInitable, ReloadableInitable {
                 .thumbnailURL("https://crafthead.net/helm/" + player.user.getProfile().getUUID())
                 .color(embedColor)
                 .title(embedTitle)
-                .footer(new EmbedFooter("", "https://grim.ac/images/grim.png"));
+                .timestamp(Instant.now());
 
         if (includeTimestamp) {
             embed.timestamp(Instant.now());
