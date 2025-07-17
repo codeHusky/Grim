@@ -25,7 +25,7 @@ import java.util.Set;
 
 public class BlockBreakSpeed {
     // temporary hardcode to workaround PE bug https://github.com/retrooper/packetevents/issues/1217; see https://github.com/GrimAnticheat/Grim/issues/2117
-    private static final Set<StateType> WORKAROUND_TYPES = Sets.newHashSet(
+    private static final Set<StateType> HARVESTABLE_TYPES_1_21_4 = Sets.newHashSet(
             StateTypes.BELL,
             StateTypes.LANTERN,
             StateTypes.SOUL_LANTERN,
@@ -45,6 +45,7 @@ public class BlockBreakSpeed {
             StateTypes.BREWING_STAND,
             StateTypes.ENDER_CHEST
     );
+
     public static double getBlockDamage(GrimPlayer player, WrappedBlockState block) {
         // GET destroy speed
         // Starts with itemstack get destroy speed
@@ -200,7 +201,7 @@ public class BlockBreakSpeed {
 
         boolean canHarvest = !block.getType().isRequiresCorrectTool() || isCorrectToolForDrop
                 // temporary hardcode to workaround PE bug https://github.com/retrooper/packetevents/issues/1217; see https://github.com/GrimAnticheat/Grim/issues/2091
-                || player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_21_4) && WORKAROUND_TYPES.contains(block.getType());
+                || player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_21_4) && HARVESTABLE_TYPES_1_21_4.contains(block.getType());
         if (canHarvest) {
             damage /= 30F;
         } else {
