@@ -1,14 +1,17 @@
 package ac.grim.grimac.utils.nmsutil;
 
 import ac.grim.grimac.player.GrimPlayer;
+import ac.grim.grimac.utils.math.GrimMath;
 import ac.grim.grimac.utils.math.Vector3dm;
 import com.github.retrooper.packetevents.protocol.attribute.Attributes;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.potion.PotionTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
+import lombok.experimental.UtilityClass;
 
 import java.util.OptionalInt;
 
+@UtilityClass
 public class JumpPower {
     public static void jumpFromGround(GrimPlayer player, Vector3dm vector) {
         float jumpPower = getJumpPower(player);
@@ -24,7 +27,7 @@ public class JumpPower {
         vector.setY(player.getClientVersion().isOlderThan(ClientVersion.V_1_21_2) ? jumpPower : Math.max(jumpPower, vector.getY()));
 
         if (player.isSprinting) {
-            float radRotation = player.xRot * ((float) Math.PI / 180);
+            float radRotation = GrimMath.radians(player.xRot);
             vector.add(new Vector3dm(-player.trigHandler.sin(radRotation) * 0.2, 0.0, player.trigHandler.cos(radRotation) * 0.2));
         }
     }
