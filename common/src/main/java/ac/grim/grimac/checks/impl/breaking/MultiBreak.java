@@ -9,7 +9,6 @@ import ac.grim.grimac.utils.anticheat.update.BlockBreak;
 import ac.grim.grimac.utils.anticheat.update.PredictionComplete;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.player.DiggingAction;
-import com.github.retrooper.packetevents.protocol.player.GameMode;
 import com.github.retrooper.packetevents.protocol.world.BlockFace;
 import com.github.retrooper.packetevents.util.Vector3i;
 
@@ -37,7 +36,7 @@ public class MultiBreak extends Check implements BlockBreakCheck {
             final String verbose = "face=" + blockBreak.face + ", lastFace=" + lastFace
                     + ", pos=" + MessageUtil.toUnlabledString(blockBreak.position)
                     + ", lastPos=" + MessageUtil.toUnlabledString(lastPos);
-            if (!player.canSkipTicksPreVia()) {
+            if (!player.canSkipTicks()) {
                 if (flagAndAlert(verbose) && shouldModifyPackets()) {
                     blockBreak.cancel();
                 }
@@ -53,14 +52,14 @@ public class MultiBreak extends Check implements BlockBreakCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (player.gamemode == GameMode.SPECTATOR || isTickPacket(event.getPacketType())) {
+        if (!player.cameraEntity.isSelf() || isTickPacket(event.getPacketType())) {
             hasBroken = false;
         }
     }
 
     @Override
     public void onPredictionComplete(PredictionComplete predictionComplete) {
-        if (!player.canSkipTicksPreVia()) return;
+        if (!player.canSkipTicks()) return;
 
         if (player.isTickingReliablyFor(3)) {
             for (String verbose : flags) {

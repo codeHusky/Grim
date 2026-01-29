@@ -3,10 +3,16 @@
 
  <div>
   <a href="https://github.com/GrimAnticheat/Grim/actions/workflows/gradle-publish.yml">
-   <img alt="Workflow" src="https://github.com/GrimAnticheat/Grim/actions/workflows/gradle-publish.yml/badge.svg" />
-  </a>
+   <img alt="Workflow" src="https://img.shields.io/github/actions/workflow/status/GrimAnticheat/Grim/gradle-publish.yml?style=flat&logo=github"/>
+  </a>&nbsp;&nbsp;
+  <a href="https://modrinth.com/plugin/grimac">
+   <img alt="Modrinth" src="https://img.shields.io/modrinth/v/LJNGWSvH?style=flat&label=version&logo=modrinth">
+  </a>&nbsp;&nbsp;
+  <a href="https://modrinth.com/plugin/grimac#download">
+   <img alt="Downloads" src="https://img.shields.io/modrinth/dt/LJNGWSvH?style=flat&logo=modrinth&label=downloads&link=https%3A%2F%2Fmodrinth.com%2Fplugin%2Fgrimac%23download">
+  </a>&nbsp;&nbsp;
   <a href="https://discord.grim.ac">
-   <img alt="Discord" src="https://img.shields.io/discord/811396969670901800?style=flat&label=Discord&logo=discord">
+   <img alt="Discord" src="https://img.shields.io/discord/811396969670901800?style=flat&label=discord&logo=discord">
   </a>
  </div>
  <br>
@@ -19,11 +25,23 @@ A premium version is planned, which will offer additional subscription-based pai
 
 ## Downloads
 
-- [Modrinth](https://modrinth.com/plugin/grimac)
-- [Hangar](https://hangar.papermc.io/GrimAnticheat/GrimAnticheat)
-- [SpigotMC](https://www.spigotmc.org/resources/grim-anticheat.99923/)
-- *For bleeding edge builds use GitHub
-  artifacts*: [Bukkit](https://nightly.link/GrimAnticheat/Grim/workflows/gradle-publish/2.0/grimac-bukkit.zip), [Fabric](https://nightly.link/GrimAnticheat/Grim/workflows/gradle-publish/2.0/grimac-fabric.zip)
+- Latest updates:
+  - **[Modrinth](https://modrinth.com/plugin/grimac)** *(recommended)*
+  - GitHub
+  artifacts: [Bukkit](https://nightly.link/GrimAnticheat/Grim/workflows/gradle-publish/2.0/grimac-bukkit.zip), [Fabric](https://nightly.link/GrimAnticheat/Grim/workflows/gradle-publish/2.0/grimac-fabric.zip) *(bleeding edge)*
+- Major releases only:
+  - ~~[Hangar](https://hangar.papermc.io/GrimAnticheat/GrimAnticheat)~~
+  - ~~[SpigotMC](https://www.spigotmc.org/resources/grim-anticheat.99923/)~~
+
+## Requirements & Installation
+
+- Java 17 or higher. *For more details, see [Updating-to-Java-17](https://github.com/GrimAnticheat/Grim/wiki/Updating-to-Java-17).*
+- A Spigot, Paper, Folia, or Fabric server environment. *For more details, see [Supported-environments](https://github.com/GrimAnticheat/Grim/wiki/Supported-environments).*
+
+If you use a proxy such as Velocity or Bungeecord:
+- If you use Geyser, Floodgate must be installed on the backend server (where Grim is) so Grim can access the Floodgate API.
+- If you use ViaVersion, it must be installed on the backend server (where Grim is) ONLY.
+  Grim does not support having ViaVersion installed on the proxy, even if it is also installed on the backend.
 
 ## Resources
 
@@ -31,23 +49,10 @@ A premium version is planned, which will offer additional subscription-based pai
 - For answers to commonly asked questions visit the [FAQ](https://github.com/GrimAnticheat/Grim/wiki/FAQ).
 - For community support and project discussion join our [Discord](https://discord.grim.ac).
 
-
 ## Pull Requests
 
 See [Contributing](CONTRIBUTING.md) for more information about contributing and what our guidelines
 are.
-
-
-## Requirements & Installation
-
-- Java 17 or higher. *For more details
-  see [Updating-to-Java-17](https://github.com/GrimAnticheat/Grim/wiki/Updating-to-Java-17).*
-- A Spigot, Paper, Folia, or Fabric server environment. *For more details
-  see [Supported-environments](https://github.com/GrimAnticheat/Grim/wiki/Supported-environments).*
-- If you use Geyser, place Floodgate on the backend server so grim can exempt bedrock players. Grim
-  cannot access the Floodgate API if it is on the proxy.
-- If you use ViaVersion, it should be on the backend server as movement is highly dependent on
-  client version.
 
 ## Developer Plugin API
 

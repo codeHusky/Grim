@@ -37,7 +37,7 @@ public class PredictionEngineNormal extends PredictionEngine {
 
     @Override
     public void addJumpsToPossibilities(GrimPlayer player, Set<VectorData> existingVelocities) {
-        if (player.supportsEndTickPreVia() && !player.packetStateData.knownInput.jump()) {
+        if (player.supportsEndTick() && !player.packetStateData.knownInput.jump()) {
             return;
         }
 
@@ -56,7 +56,7 @@ public class PredictionEngineNormal extends PredictionEngine {
 
                 JumpPower.jumpFromGround(player, jump);
             } else {
-                jump.add(new Vector3dm(0, player.flySpeed * 3, 0));
+                jump.add(0, player.flySpeed * 3, 0);
                 if (!player.wasFlying) {
                     Vector3dm edgeCaseJump = jump.clone();
                     JumpPower.jumpFromGround(player, edgeCaseJump);

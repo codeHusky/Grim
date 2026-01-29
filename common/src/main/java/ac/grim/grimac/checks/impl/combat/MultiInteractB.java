@@ -8,7 +8,6 @@ import ac.grim.grimac.utils.anticheat.MessageUtil;
 import ac.grim.grimac.utils.anticheat.update.PredictionComplete;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.protocol.player.GameMode;
 import com.github.retrooper.packetevents.util.Vector3f;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
 
@@ -35,7 +34,7 @@ public class MultiInteractB extends Check implements PostPredictionCheck {
 
             if (hasInteracted && !pos.equals(lastPos)) {
                 String verbose = "pos=" + MessageUtil.toUnlabledString(pos) + ", lastPos=" + MessageUtil.toUnlabledString(lastPos);
-                if (!player.canSkipTicksPreVia()) {
+                if (!player.canSkipTicks()) {
                     if (flagAndAlert(verbose) && shouldModifyPackets()) {
                         event.setCancelled(true);
                         player.onPacketCancel();
@@ -49,14 +48,14 @@ public class MultiInteractB extends Check implements PostPredictionCheck {
             hasInteracted = true;
         }
 
-        if (player.gamemode == GameMode.SPECTATOR || isTickPacket(event.getPacketType())) {
+        if (!player.cameraEntity.isSelf() || isTickPacket(event.getPacketType())) {
             hasInteracted = false;
         }
     }
 
     @Override
     public void onPredictionComplete(PredictionComplete predictionComplete) {
-        if (!player.canSkipTicksPreVia()) return;
+        if (!player.canSkipTicks()) return;
 
         if (player.isTickingReliablyFor(3)) {
             for (String verbose : flags) {

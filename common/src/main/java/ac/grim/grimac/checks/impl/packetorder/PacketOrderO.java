@@ -24,14 +24,12 @@ public class PacketOrderO extends Check implements PacketCheck {
             flying = false;
         }
 
-        if (isFlying(event.getPacketType()) && player.supportsEndTickPreVia() && !player.packetStateData.lastPacketWasTeleport) {
+        if (isFlying(event.getPacketType()) && player.supportsEndTick() && !player.packetStateData.lastPacketWasTeleport) {
             flying = true;
             return;
         }
 
-        if (flying && event.getPacketType() != PacketType.Play.Client.KEEP_ALIVE
-                && event.getPacketType() != PacketType.Play.Client.VEHICLE_MOVE
-        ) {
+        if (flying && !isAsync(event.getPacketType()) && event.getPacketType() != PacketType.Play.Client.VEHICLE_MOVE) {
             if (player.inVehicle() && event.getPacketType() == PacketType.Play.Client.ENTITY_ACTION) {
                 WrapperPlayClientEntityAction.Action action = new WrapperPlayClientEntityAction(event).getAction();
                 if (action == WrapperPlayClientEntityAction.Action.START_SPRINTING || action == WrapperPlayClientEntityAction.Action.STOP_SPRINTING) {

@@ -6,9 +6,9 @@ import ac.grim.grimac.platform.api.player.PlatformPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -21,7 +21,7 @@ public class BukkitPlatformPlayerFactory extends AbstractPlatformPlayerFactory<P
     }
 
     @Override
-    protected Player getNativePlayer(@NonNull String name) {
+    protected Player getNativePlayer(@NotNull String name) {
         return Bukkit.getPlayer(name);
     }
 
@@ -54,5 +54,15 @@ public class BukkitPlatformPlayerFactory extends AbstractPlatformPlayerFactory<P
     public OfflinePlatformPlayer getOfflineFromName(@NotNull String name) {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
         return new BukkitOfflinePlatformPlayer(offlinePlayer);
+    }
+
+    @Override
+    public Collection<OfflinePlatformPlayer> getOfflinePlayers() {
+        OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
+        BukkitOfflinePlatformPlayer[] offlinePlatformPlayers = new BukkitOfflinePlatformPlayer[offlinePlayers.length];
+        for (int i = 0; i < offlinePlayers.length; i++) {
+            offlinePlatformPlayers[i] = new BukkitOfflinePlatformPlayer(offlinePlayers[i]);
+        }
+        return Arrays.asList(offlinePlatformPlayers);
     }
 }

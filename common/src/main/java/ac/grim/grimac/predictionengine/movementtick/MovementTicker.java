@@ -8,14 +8,16 @@ import ac.grim.grimac.utils.collisions.datatypes.SimpleCollisionBox;
 import ac.grim.grimac.utils.data.VectorData;
 import ac.grim.grimac.utils.data.packetentity.PacketEntity;
 import ac.grim.grimac.utils.data.packetentity.PacketEntityStrider;
+import ac.grim.grimac.utils.enums.FluidTag;
 import ac.grim.grimac.utils.math.GrimMath;
 import ac.grim.grimac.utils.math.Vector3dm;
 import ac.grim.grimac.utils.nmsutil.BlockProperties;
 import ac.grim.grimac.utils.nmsutil.Collisions;
+import ac.grim.grimac.utils.nmsutil.EntityTypeTags;
 import ac.grim.grimac.utils.nmsutil.FluidFallingAdjustedMovement;
 import ac.grim.grimac.utils.nmsutil.GetBoundingBox;
 import ac.grim.grimac.utils.nmsutil.MainSupportingBlockPosFinder;
-import ac.grim.grimac.utils.reflection.ViaVersionUtil;
+import ac.grim.grimac.utils.viaversion.ViaVersionUtil;
 import ac.grim.grimac.utils.team.EntityPredicates;
 import ac.grim.grimac.utils.team.EntityTeam;
 import ac.grim.grimac.utils.team.TeamHandler;
@@ -31,14 +33,11 @@ import com.github.retrooper.packetevents.protocol.world.states.type.StateType;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.viaversion.viaversion.api.Via;
+import lombok.RequiredArgsConstructor;
 
-
+@RequiredArgsConstructor
 public class MovementTicker {
     public final GrimPlayer player;
-
-    public MovementTicker(GrimPlayer player) {
-        this.player = player;
-    }
 
     public static void handleEntityCollisions(GrimPlayer player) {
         // 1.7 and 1.8 do not have player collision
@@ -47,6 +46,7 @@ public class MovementTicker {
                 // Check that ViaVersion disables all collisions on a 1.8 server for 1.9+ clients
                 || (!serverSupported
                 && (!ViaVersionUtil.isAvailable || Via.getConfig().isPreventCollision())));
+        if (!hasEntityPushing) return;
 
         int possibleCollidingEntities = 0;
         int possibleRiptideEntities = 0;
@@ -67,8 +67,7 @@ public class MovementTicker {
 
                 possibleRiptideEntities++;
 
-                if (!hasEntityPushing || !entity.isPushable())
-                    continue;
+                if (!entity.isPushable()) continue;
 
                 // Filters out entities that can't be pushed/collided because of team collision rules
                 // Also handles 1.9+ player on 1.8- server with ViaVersion prevent-collision disabled.
@@ -99,7 +98,7 @@ public class MovementTicker {
         float xxa = (float) player.predictedVelocity.input.getX();
         float zza = (float) player.predictedVelocity.input.getZ();
 
-        float yawInRadians = player.xRot * (float) (Math.PI / 180.0);
+        float yawInRadians = player.yaw * (float) (Math.PI / 180.0);
         double sin = player.trigHandler.sin(yawInRadians);
         double cos = player.trigHandler.cos(yawInRadians);
         double g = xxa * cos - zza * sin;
@@ -229,14 +228,14 @@ public class MovementTicker {
             Vector3d from = new Vector3d(player.lastX, player.lastY, player.lastZ);
             Vector3d to = new Vector3d(player.x, player.y, player.z);
 
-            player.addMovementThisTick(new GrimPlayer.Movement(from, to, true));
+            player.addMovementThisTick(new GrimPlayer.Movement(from, to, new Vector3d(inputVel.getX(), inputVel.getY(), inputVel.getZ())));
         }
 
         // This is where vanilla moves the bounding box and sets it
         player.predictedVelocity = new VectorData(collide.clone(), player.predictedVelocity.lastVector, player.predictedVelocity.vectorType);
 
         float f = BlockProperties.getBlockSpeedFactor(player, player.mainSupportingBlockData, new Vector3d(player.x, player.y, player.z));
-        player.clientVelocity.multiply(new Vector3dm(f, 1, f));
+        player.clientVelocity.multiply(f, 1, f);
 
         if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_21_2)) {
             return;
@@ -441,6 +440,7 @@ public class MovementTicker {
                 player.lastWasClimbing = FluidFallingAdjustedMovement.getFluidFallingAdjustedMovement(player, playerGravity, isFalling, player.clientVelocity.clone().setY(0.2D * 0.8F)).getY();
             }
 
+            floatInWaterWhileRidden();
         } else {
             if (player.wasTouchingLava && !player.isFlying && !(lavaLevel > 0 && canStandOnLava())) {
                 player.friction = 0.5F; // Not vanilla, just useful for other grim stuff
@@ -449,14 +449,14 @@ public class MovementTicker {
 
                 // Lava movement changed in 1.16
                 if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_16) && player.slightlyTouchingLava) {
-                    player.clientVelocity = player.clientVelocity.multiply(new Vector3dm(0.5D, 0.800000011920929D, 0.5D));
+                    player.clientVelocity = player.clientVelocity.multiply(0.5D, 0.800000011920929D, 0.5D);
                     player.clientVelocity = FluidFallingAdjustedMovement.getFluidFallingAdjustedMovement(player, playerGravity, isFalling, player.clientVelocity);
                 } else {
                     player.clientVelocity.multiply(0.5D);
                 }
 
                 if (player.hasGravity)
-                    player.clientVelocity.add(new Vector3dm(0.0D, -playerGravity / 4.0D, 0.0D));
+                    player.clientVelocity.add(0.0D, -playerGravity / 4.0D, 0.0D);
 
             } else if (player.isGliding) {
                 if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_21_5) && Collisions.onClimbable(player, player.lastX, player.lastY, player.lastZ)) {
@@ -484,43 +484,17 @@ public class MovementTicker {
             }
         }
 
-        if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_21_2)) {
-            // Reset stuck speed so it can update
-            if (player.stuckSpeedMultiplier.getX() < 0.99) {
-                player.uncertaintyHandler.lastStuckSpeedMultiplier.reset();
-            }
+        Collisions.applyEffectsFromBlocks(player);
+    }
 
-            player.stuckSpeedMultiplier = new Vector3dm(1, 1, 1);
-            player.finalMovementsThisTick.clear();
+    private void floatInWaterWhileRidden() {
+        if (player.getClientVersion().isOlderThan(ClientVersion.V_1_21_11) || !player.inVehicle()) return;
 
-            Vector3d from = new Vector3d(player.lastX, player.lastY, player.lastZ);
-            Vector3d to = new Vector3d(player.x, player.y, player.z);
-
-            ClientVersion clientVersion = player.getClientVersion();
-            if (clientVersion.isOlderThan(ClientVersion.V_1_21_5)) {
-                player.finalMovementsThisTick.add(new GrimPlayer.Movement(from, to, false));
-            } else if (clientVersion.isNewerThanOrEquals(ClientVersion.V_1_21_5)) {
-                player.finalMovementsThisTick.addAll(player.movementThisTick);
-                player.movementThisTick.clear();
-
-                if (player.finalMovementsThisTick.isEmpty()) {
-                    player.finalMovementsThisTick.add(new GrimPlayer.Movement(from, to, false));
-                } else if (player.finalMovementsThisTick.get(player.finalMovementsThisTick.size() - 1).to().distanceSquared(to) > 9.9999994E-11F) {
-                    player.finalMovementsThisTick.add(new GrimPlayer.Movement(player.finalMovementsThisTick.get(player.finalMovementsThisTick.size() - 1).to(), to, false));
-                }
-            }
-
-            Collisions.applyEffectsFromBlocks(player);
-
-            if (player.stuckSpeedMultiplier.getX() < 0.9) {
-                // Reset fall distance if stuck in block
-                player.fallDistance = 0;
-            }
-
-            // Flying players are not affected by cobwebs/sweet berry bushes
-            if (player.isFlying) {
-                player.stuckSpeedMultiplier = new Vector3dm(1, 1, 1);
-            }
+        PacketEntity vehicle = player.getVehicle();
+        boolean canFloatWhileRidden = EntityTypeTags.CAN_FLOAT_WHILE_RIDDEN.anyOf(vehicle.type);
+        double fluidHeight = player.fluidHeight.getDouble(FluidTag.WATER);
+        if (canFloatWhileRidden && player.inVehicle() && fluidHeight > 0.4) {
+            player.clientVelocity.add(0.0, 0.04F, 0.0);
         }
     }
 

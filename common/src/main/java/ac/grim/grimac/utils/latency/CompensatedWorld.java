@@ -19,7 +19,6 @@ import ac.grim.grimac.utils.nmsutil.GetBoundingBox;
 import ac.grim.grimac.utils.nmsutil.Materials;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
-import com.github.retrooper.packetevents.netty.channel.ChannelHelper;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.player.DiggingAction;
@@ -537,7 +536,7 @@ public class CompensatedWorld {
         WrappedBlockState block = getBlock(x, y, z);
 
         if (block.getType() == StateTypes.DETECTOR_RAIL) { // Rails hard power block below itself
-            boolean isPowered = (boolean) block.getInternalData().getOrDefault(StateValue.POWERED, false);
+            boolean isPowered = block.hasProperty(StateValue.POWERED) && block.isPowered();
             return face == BlockFace.UP && isPowered ? 15 : 0;
         } else if (block.getType() == StateTypes.REDSTONE_TORCH) {
             return face != BlockFace.UP && block.isLit() ? 15 : 0;

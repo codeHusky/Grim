@@ -2,6 +2,7 @@ package ac.grim.grimac.predictionengine.predictions;
 
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.data.VectorData;
+import ac.grim.grimac.utils.math.GrimMath;
 import ac.grim.grimac.utils.math.Vector3dm;
 
 import java.util.HashSet;
@@ -31,8 +32,9 @@ public class PredictionEngineWaterLegacy extends PredictionEngine {
 
             lengthSquared = swimmingSpeed / lengthSquared;
             inputVector.multiply(lengthSquared);
-            float sinResult = player.trigHandler.sin(player.xRot * 0.017453292F);
-            float cosResult = player.trigHandler.cos(player.xRot * 0.017453292F);
+            float yawRadians = GrimMath.radians(player.yaw);
+            float sinResult = player.trigHandler.sin(yawRadians);
+            float cosResult = player.trigHandler.cos(yawRadians);
 
             return new Vector3dm(inputVector.getX() * cosResult - inputVector.getZ() * sinResult,
                     inputVector.getY(), inputVector.getZ() * cosResult + inputVector.getX() * sinResult);
@@ -45,10 +47,10 @@ public class PredictionEngineWaterLegacy extends PredictionEngine {
     @Override
     public void addJumpsToPossibilities(GrimPlayer player, Set<VectorData> existingVelocities) {
         for (VectorData vector : new HashSet<>(existingVelocities)) {
-            existingVelocities.add(new VectorData(vector.vector.clone().add(new Vector3dm(0, 0.04f, 0)), vector, VectorData.VectorType.Jump));
+            existingVelocities.add(new VectorData(vector.vector.clone().add(0, 0.04f, 0), vector, VectorData.VectorType.Jump));
 
             if (player.skippedTickInActualMovement) {
-                existingVelocities.add(new VectorData(vector.vector.clone().add(new Vector3dm(0, 0.02f, 0)), vector, VectorData.VectorType.Jump));
+                existingVelocities.add(new VectorData(vector.vector.clone().add(0, 0.02f, 0), vector, VectorData.VectorType.Jump));
             }
         }
     }
@@ -58,7 +60,7 @@ public class PredictionEngineWaterLegacy extends PredictionEngine {
         super.endOfTick(player, playerGravity);
 
         for (VectorData vector : player.getPossibleVelocitiesMinusKnockback()) {
-            vector.vector.multiply(new Vector3dm(swimmingFriction, 0.8F, swimmingFriction));
+            vector.vector.multiply(swimmingFriction, 0.8F, swimmingFriction);
 
             // Gravity
             vector.vector.setY(vector.vector.getY() - 0.02D);

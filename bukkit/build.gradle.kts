@@ -5,32 +5,40 @@ plugins {
     `maven-publish`
     grim.`base-conventions`
     grim.`shadow-conventions`
-    id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
+    id("de.eldoria.plugin-yml.bukkit") version "0.8.0"
     id("xyz.jpenilla.run-paper") version "3.0.0-beta.1"
 }
 
 repositories {
-    if (BuildConfig.mavenLocalOverride) {
-        mavenLocal()
+    // 1. Fallback for non-exclusive deps (e.g. Maven Central deps)
+    if (BuildConfig.mavenLocalOverride) mavenLocal()
+
+    // 2. Exclusive Repositories (One HTTP request per dep)
+    exclusive("https://repo.papermc.io/repository/maven-public/", { name = "papermc" }) {
+        includeGroup("io.papermc.paper")
+        includeGroup("net.md-5")
     }
-    maven {
-        name = "papermc"
-        url = uri("https://repo.papermc.io/repository/maven-public/")
+
+    exclusive("https://libraries.minecraft.net", { mavenContent { releasesOnly() } }) {
+        includeModule("com.mojang", "brigadier")
     }
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") // Spigot
-    maven("https://repo.grim.ac/snapshots") { // Grim API
-        content {
-            includeGroup("ac.grim.grimac")
-            includeGroup("com.github.retrooper")
-        }
+
+    exclusive("https://repo.extendedclip.com/content/repositories/placeholderapi/") {
+        includeGroup("me.clip")
     }
-    maven("https://repo.viaversion.com") // ViaVersion
-    maven("https://nexus.scarsz.me/content/repositories/releases") // Configuralize
-    maven("https://repo.opencollab.dev/maven-snapshots/") // Floodgate
-    maven("https://repo.opencollab.dev/maven-releases/") // Cumulus (for Floodgate)
-    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") // placeholderapi
-    mavenCentral() // FastUtil
+
+    exclusive("https://repo.grim.ac/snapshots") {
+        includeGroup("ac.grim.grimac")
+        includeGroup("com.github.retrooper")
+    }
+
+    exclusive("https://nexus.scarsz.me/content/repositories/releases", { mavenContent { releasesOnly() } }) {
+        includeGroup("github.scarsz")
+    }
+
+    mavenCentral()
 }
+
 
 dependencies {
     compileOnly(libs.paper.api)
@@ -43,6 +51,7 @@ dependencies {
     }
     implementation(libs.cloud.paper)
     implementation(libs.adventure.platform.bukkit)
+    implementation(libs.grim.bukkit.internal)
 
     implementation(project(":common"))
     shadow(project(":common"))
@@ -150,7 +159,7 @@ publishing.publications.create<MavenPublication>("maven") {
 
 tasks {
     runServer {
-        minecraftVersion("1.21.4")
+        minecraftVersion("1.21.11")
     }
 
     shadowJar {

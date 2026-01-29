@@ -10,7 +10,6 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
-import com.github.retrooper.packetevents.protocol.player.GameMode;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientUseItem;
 
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public class BadPacketsJ extends Check implements PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (player.gamemode == GameMode.SPECTATOR) {
+        if (!player.cameraEntity.isSelf()) {
             rotations.clear();
             return;
         }
@@ -39,14 +38,14 @@ public class BadPacketsJ extends Check implements PacketCheck {
 
         if (isTickPacket(event.getPacketType())) {
             // due to tick skipping, the rotations sent could be last tick's
-            boolean allowLast = player.canSkipTicksPreVia() && (event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION || event.getPacketType() == PacketType.Play.Client.PLAYER_ROTATION);
+            boolean allowLast = player.canSkipTicks() && (event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION || event.getPacketType() == PacketType.Play.Client.PLAYER_ROTATION);
             for (HeadRotation rotation : rotations) {
-                if (rotation.getYaw() == player.xRot && rotation.getPitch() == player.yRot) {
+                if (rotation.yaw() == player.yaw && rotation.pitch() == player.pitch) {
                     allowLast = false;
                     continue;
                 }
 
-                if (rotation.getYaw() == player.lastXRot && rotation.getPitch() == player.lastYRot && allowLast) {
+                if (rotation.yaw() == player.lastYaw && rotation.pitch() == player.lastPitch && allowLast) {
                     continue;
                 }
 

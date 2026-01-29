@@ -1,5 +1,6 @@
 package ac.grim.grimac.utils.math;
 
+import com.github.retrooper.packetevents.util.Vector3i;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +33,7 @@ public class GrimMath {
     }
 
     @Contract(pure = true)
-    public static double calculateSD(@NotNull List<Double> numbers) {
+    public static double calculateSD(@NotNull List<@NotNull Double> numbers) {
         double sum = 0.0;
         double standardDeviation = 0.0;
 
@@ -185,6 +186,11 @@ public class GrimMath {
     private static final long PACKED_Z_MASK = (1L << PACKED_HORIZONTAL_LENGTH) - 1L;
     private static final int Z_OFFSET = PACKED_Y_LENGTH;
     private static final int X_OFFSET = PACKED_Y_LENGTH + PACKED_HORIZONTAL_LENGTH;
+
+    @Contract(pure = true)
+    public static long asLong(Vector3i vector) {
+        return asLong(vector.getX(), vector.getY(), vector.getZ());
+    }
 
     @Contract(pure = true)
     public static long asLong(int x, int y, int z) {
