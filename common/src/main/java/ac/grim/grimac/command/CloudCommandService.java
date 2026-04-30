@@ -48,6 +48,8 @@ public class CloudCommandService implements CommandService {
         new GrimSendAlert().register(commandManager, commandAdapter);
         new GrimHelp().register(commandManager, commandAdapter);
         new GrimHistory().register(commandManager, commandAdapter);
+        new GrimHistoryMigrate().register(commandManager, commandAdapter);
+        new GrimHistoryCopy().register(commandManager, commandAdapter);
         new GrimReload().register(commandManager, commandAdapter);
         new GrimSpectate().register(commandManager, commandAdapter);
         new GrimStopSpectating().register(commandManager, commandAdapter);
@@ -57,6 +59,7 @@ public class CloudCommandService implements CommandService {
         new GrimDump().register(commandManager, commandAdapter);
         new GrimBrands().register(commandManager, commandAdapter);
         new GrimList().register(commandManager, commandAdapter);
+        new GrimTestWebhook().register(commandManager, commandAdapter);
 
         final RequirementPostprocessor<Sender, SenderRequirement>
                 senderRequirementPostprocessor = RequirementPostprocessor.of(

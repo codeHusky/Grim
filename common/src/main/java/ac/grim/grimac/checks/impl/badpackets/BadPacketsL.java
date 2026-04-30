@@ -12,7 +12,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 
 import java.util.Locale;
 
-@CheckData(name = "BadPacketsL", description = "Sent impossible dig packet")
+@CheckData(name = "BadPacketsL", stableKey = "grim.badpackets.invalid_dig", description = "Sent impossible dig packet")
 public class BadPacketsL extends Check implements PacketCheck {
 
     public BadPacketsL(GrimPlayer player) {
@@ -43,7 +43,7 @@ public class BadPacketsL extends Check implements PacketCheck {
                         + ", face=" + packet.getBlockFace()
                         + ", sequence=" + packet.getSequence()
                         + ", action=" + packet.getAction().toString().toLowerCase(Locale.ROOT)
-                ) && shouldModifyPackets() && packet.getAction() != DiggingAction.RELEASE_USE_ITEM) {
+                ) && shouldModifyPackets() && canCancel(packet.getAction())) {
                     event.setCancelled(true);
                     player.onPacketCancel();
                 }
